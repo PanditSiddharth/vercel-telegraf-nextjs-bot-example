@@ -1,21 +1,28 @@
 import { bot } from "@/bot"
-export async function POST(request) {
+
+export async function POST(req) {
     try {
-        const update = await request.json();
-        await bot.handleUpdate(update);
+        if (process.env.NODE_ENV == "production")
+            await bot.handleUpdate(await req.json());
+        return NextResponse.json({ "done": true });
     } catch (err) {
-        console.error('Error handling update', err);
+        return NextResponse.json({ error: "Invalid" })
     }
-    return NextResponse.json({ status: 'ok' });
 }
 
-export async function GET() {
+export async function GET(req) {
     try {
-        let url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/setWebhook?url=${process.env.VERCEL_URL}/api`
-        let res = await fetch(url)
-            .then(res => res.json())
-        return NextResponse.json(res);
-    } catch (error) {
-        return NextResponse.json({ error: error.message });
+        if (process.env.NODE_ENV == "development") {
+            await bot.launch({ dropPendingUpdates: true })
+        } else {
+            let url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/setWebhook?url=${process.env.VERCEL_URL}/api`
+            let res = await fetch(url)
+                .then(res => res.json())
+            return NextResponse.json(res);
+        }
+    } catch (err) {
+        return NextResponse.json({ error: err.message })
     }
 }
+
+
