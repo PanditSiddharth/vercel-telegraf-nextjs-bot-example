@@ -1,4 +1,3 @@
-import { bot } from "@/bot"
 import { NextResponse } from "next/server";
 import main from "./main"
 import { Telegraf } from "telegraf"
