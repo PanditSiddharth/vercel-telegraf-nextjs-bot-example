@@ -7,18 +7,22 @@ import { Telegraf } from "telegraf"
 const bot = new Telegraf(process.env.BOT_TOKEN) 
 export async function POST(req) {
     try {
-        if (process.env.NODE_ENV == "production")
+        if (process.env.NODE_ENV == "production"){
             main(bot)
             await bot.handleUpdate(await req.json());
+        }
         return NextResponse.json({ "done": true });
     } catch (err) {
         return NextResponse.json({ error: "Invalid" })
     }
 }
 
+
 export async function GET(req) {
     try {
+        
         if (process.env.NODE_ENV == "development") {
+            main(bot)
             bot.launch({ dropPendingUpdates: true })
             return NextResponse.json({status: "true"})
         } else {
